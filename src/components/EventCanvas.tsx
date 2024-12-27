@@ -3,21 +3,18 @@ import { BufferedCanvas } from '@components/graphic'
 import { CanvasRef, Drawable, View } from '@components/graphic/types'
 
 type EventCanvasProps = {
+  className?: string
   style: React.CSSProperties
   components?: (Drawable | View | null | undefined)[]
 }
 
 const backgroundStyle = {
   backgroundColor: '#333',
-  backgroundImage: 'radial-gradient(#444 1px, transparent 1px)',
-  backgroundSize: '14px 14px',
+  backgroundImage: 'radial-gradient(#444 1px, transparent 0)',
+  backgroundSize: '20px 20px',
 }
 
-export const EventCanvas = ({
-  style,
-  components
-}: EventCanvasProps) => {
-
+export const EventCanvas = ({ className, style, components }: EventCanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<CanvasRef>(null)
   const [point, setPoint] = useState({x: 0, y: 0})
@@ -29,7 +26,9 @@ export const EventCanvas = ({
   const componentsCanInteract = useMemo<View[]>(() => (
     validComponents?.filter((component: View | undefined) => {
       if (!component) return false
-      return component.onHover || component.onClick
+      return component.onMouseEnter
+      || component.onMouseLeave
+      || component.onClick
     }) as View[]
   ), [validComponents])
 
@@ -42,6 +41,7 @@ export const EventCanvas = ({
         ...backgroundStyle
       }}
       fps={60}
+      resolution={2}
       autoStart={true}
       onRepaint={(ctx, ts) => {
         validComponents?.forEach((c) => c?.draw?.(ctx, ts))
@@ -65,14 +65,23 @@ export const EventCanvas = ({
 
     for (const component of componentsCanInteract) {
       if (component?.intersects?.(canvasX, canvasY)) {
+        if (hoverSubject !== component) {
+          hoverSubject?.onMouseLeave?.(point, hoverSubject)
+          component.onMouseEnter?.(point, component)
+        }
+
         setHoverSubject(component)
-        component.onHover?.(point, component)
         return
       }
     }
+
+    hoverSubject?.onMouseLeave?.(point, hoverSubject)
   }
 
   const onMouseLeave = () => {
+    if (hoverSubject) {
+      hoverSubject.onMouseLeave?.(point, hoverSubject)
+    }
     setHoverSubject(null)
     setPoint({x: 0, y: 0})
   }
@@ -88,7 +97,7 @@ export const EventCanvas = ({
   }, [hoverSubject])
 
   return (
-    <div style={style}>
+    <div className={className} style={style}>
       <div
         ref={containerRef}
         style={{

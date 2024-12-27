@@ -68,6 +68,7 @@ export const Line = (
       ctx.moveTo(this.x1, this.y1)
       ctx.lineTo(this.x2, this.y2)
       ctx.stroke()
+      ctx.fill()
 
       ctx.setLineDash([])
     },

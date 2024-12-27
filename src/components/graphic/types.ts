@@ -14,7 +14,8 @@ export interface Drawable {
 
 export interface View extends Drawable {
   onClick?: (point?: Point, view?: View) => void
-  onHover?: (point?: Point, view?: View) => void
+  onMouseEnter?: (point?: Point, view?: View) => void
+  onMouseLeave?: (point?: Point, view?: View) => void
 }
 
 export type DrawableStyleProps = {
@@ -22,6 +23,7 @@ export type DrawableStyleProps = {
   strokeWidth?: number
   lineDash?: number[]
   lineCap?: CanvasLineCap
+  fill?: string
 }
 
 export type AnimationProps = {

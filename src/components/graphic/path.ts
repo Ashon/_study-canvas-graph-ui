@@ -39,6 +39,7 @@ export const Path = (
       ctx.lineWidth = this.style?.strokeWidth as number || 1
       ctx.lineCap = this.style?.lineCap || 'butt'
 
+
       if (this.animation?.lineDashOffset) {
         const from = this.animation.lineDashOffset.from || 0
         const lineAnimationDuration = this.animation.lineDashOffset.duration
@@ -58,6 +59,10 @@ export const Path = (
 
       ctx.beginPath()
       ctx.stroke($path)
+      if (this.style?.fill) {
+        ctx.fillStyle = this.style.fill
+        ctx.fill($path)
+      }
       ctx.setLineDash([])
     },
     intersects: function(this, x: number, y: number, gap: number = 5) {

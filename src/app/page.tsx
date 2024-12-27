@@ -1,6 +1,6 @@
 'use client'
 
-import { Line, Path } from "@components/graphic"
+import { Line, Path, Circle } from "@components/graphic"
 import { EventCanvas } from "@components/EventCanvas"
 import { Drawable, Point, View } from "@components/graphic/types"
 
@@ -11,13 +11,18 @@ const l1 = {
       strokeWidth: 3
     }
   }) as Drawable,
-  onHover: (point: Point, view: View) => {
-    console.log('hover', point, view)
+  onMouseEnter: (point: Point, view: View) => {
+    console.log('enter', point, view)
+    view.style!.stroke = 'red'
+  },
+  onMouseLeave: (point: Point, view: View) => {
+    console.log('leave', point, view)
+    view.style!.stroke = 'lime'
   }
 }
 
 const l2 = {
-  ...Line(10, 10, 80, 80, {
+  ...Line(20, 20, 80, 80, {
     style: {
       stroke: '#ff6',
       strokeWidth: 1
@@ -42,7 +47,7 @@ const l3 = Line(10, 10, 80, 80, {
   }
 })
 
-const l4 = Line(20, 10, 20, 50, {
+const l4 = Line(10, 10, 20, 50, {
   style: {
     stroke: 'red',
     strokeWidth: 1
@@ -82,6 +87,27 @@ const p2 = Path('M50,100 C80,50 120,150 150,100', {
   }
 })
 
+const c1 = Circle(100, 200, 10, {
+  style: {
+    stroke: '#f00',
+    strokeWidth: 5,
+    fill: '#111'
+  }
+})
+
+const c2 = {
+  ...Circle(200, 200, 10, {
+    style: {
+      stroke: '#faf',
+      strokeWidth: 5,
+      fill: '#333'
+    }
+  }) as Drawable,
+  onClick: () => {
+    console.log('c2 click')
+  }
+}
+
 export default function Home() {
   return (
     <EventCanvas
@@ -90,7 +116,10 @@ export default function Home() {
         width: 500,
         height: 300,
       }}
-      components={[l1, l2, l3, l4, l5, p1, p2]}
+      components={[
+        l1, l2, l3, l4, l5, p1, p2, c1, c2
+      ]}
     />
   )
 }
+
