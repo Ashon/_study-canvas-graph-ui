@@ -1,38 +1,25 @@
 'use client'
 
-import { useRef } from "react"
-import { CanvasRef } from "@components/graphic/types"
-import { Canvas, Line, Path } from "@components/graphic"
+import { Line, Path } from "@components/graphic"
+import { EventCanvas } from "@components/EventCanvas"
 
 const l1 = Line(0, 0, 500, 300, {
   style: {
     stroke: 'lime',
     strokeWidth: 3
-  },
-  events: {
-    onMouseEnter: () => {
-      console.log('mouse enter')
-    }
   }
 })
 
 const l2 = Line(10, 10, 80, 80, {
   style: {
-    stroke: '#f66',
+    stroke: '#ff6',
     strokeWidth: 1
   }
 })
 
-const l3 = Line(20, 10, 20, 50, {
+const l3 = Line(10, 10, 80, 80, {
   style: {
-    stroke: 'red',
-    strokeWidth: 1
-  }
-})
-
-const l4 = Line(10, 10, 80, 80, {
-  style: {
-    stroke: '#f00',
+    stroke: '#ff0',
     strokeWidth: 10,
     lineCap: 'round'
   },
@@ -41,6 +28,13 @@ const l4 = Line(10, 10, 80, 80, {
       duration: 5000,
       from: 0,
     }
+  }
+})
+
+const l4 = Line(20, 10, 20, 50, {
+  style: {
+    stroke: 'red',
+    strokeWidth: 1
   }
 })
 
@@ -73,39 +67,14 @@ const p2 = Path('M50,100 C80,50 120,150 150,100', {
 })
 
 export default function Home() {
-  const canvasRef = useRef<CanvasRef>(null)
-
   return (
-    <div style={{
-      background: '#222',
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-    }}>
-      <Canvas
-        ref={canvasRef}
-        style={{
-          margin: '200px auto',
-          width: '500px',
-          height: '300px',
-          backgroundColor: '#333',
-          backgroundImage: 'radial-gradient(circle at center, #444 1px, transparent 1px)',
-          backgroundSize: '14px 14px',
-          transform: `translate(0px, 0px)`,
-        }}
-        fps={60}
-        autoStart={true}
-        onRepaint={(ctx, ts) => {
-          l1.draw(ctx, ts)
-          l2.draw(ctx, ts)
-          l3.draw(ctx, ts)
-          l4.draw(ctx, ts)
-          l5.draw(ctx, ts)
-
-          p1.draw(ctx, ts)
-          p2.draw(ctx, ts)
-        }}
-      />
-    </div>
+    <EventCanvas
+      style={{
+        margin: '100px auto',
+        width: 500,
+        height: 300,
+      }}
+      components={[l1, l2, l3, l4, l5, p1, p2]}
+    />
   )
 }

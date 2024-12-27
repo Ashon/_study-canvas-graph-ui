@@ -17,15 +17,18 @@ export const Path = (
   pathData: string,
   { style, animation }: PathStyleProps
 ) => {
+  if (typeof window === 'undefined') return null
+  if (typeof document === 'undefined') return null
 
   const pathLength = getPathTotalLength(pathData)
+  const $path = new Path2D(pathData)
 
   return {
     pathData,
     style,
     animation,
     length: pathLength,
-    draw: function(this: any, ctx: Context2D, ts: number) {
+    draw: function(this, ctx: Context2D, ts: number) {
       ctx.strokeStyle = this.style?.stroke || '#000'
       ctx.lineWidth = this.style?.strokeWidth as number || 1
       ctx.lineCap = this.style?.lineCap || 'butt'
@@ -48,10 +51,7 @@ export const Path = (
       }
 
       ctx.beginPath()
-      if (this.$path === undefined) {
-        this.$path = new Path2D(pathData)
-      }
-      ctx.stroke(this.$path)
+      ctx.stroke($path)
       ctx.setLineDash([])
     }
   }

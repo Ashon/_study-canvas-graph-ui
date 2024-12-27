@@ -9,6 +9,10 @@ export type EventProps = {
   onMouseUp?: (e: MouseEvent) => void
 }
 
+export type Drawable = {
+  draw: (ctx: Context2D, ts: number) => void
+}
+
 export type LineStyleProps = {
   stroke?: string
   strokeWidth?: number

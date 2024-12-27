@@ -1,4 +1,4 @@
-import { Canvas } from './GraphCanvas'
+import { Canvas } from './Canvas'
 import { Line } from './line'
 import { Path } from './path'
 

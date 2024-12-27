@@ -28,7 +28,7 @@ export const Canvas = forwardRef(({
   className,
   style,
   fps = 60,
-  resolution = 4,
+  resolution = 2,
   onRepaint = () => {},
   autoStart = false
 }: Props, ref: ForwardedRef<CanvasRef>) => {

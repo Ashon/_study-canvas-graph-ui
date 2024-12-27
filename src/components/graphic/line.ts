@@ -4,7 +4,6 @@ import {
   AnimationProps,
   LineStyleProps,
   Context2D,
-  EventProps
 } from './types'
 import { getPathTotalLength } from './utils'
 import { easingMethods } from './easing'
@@ -12,7 +11,6 @@ import { easingMethods } from './easing'
 type LineProps = {
   style?: LineStyleProps
   animation?: AnimationProps
-  events?: EventProps
 }
 
 export const Line = (
@@ -20,7 +18,7 @@ export const Line = (
   y1: number,
   x2: number,
   y2: number,
-  { style, animation, events }: LineProps
+  { style, animation }: LineProps
 ) => {
 
   const lineLength = getPathTotalLength(`M${x1},${y1} L${x2},${y2}`)
@@ -33,7 +31,7 @@ export const Line = (
     style,
     animation,
     length: lineLength,
-    draw: function(this: any, ctx: Context2D, ts: number) {
+    draw: function(this, ctx: Context2D, ts: number) {
       ctx.strokeStyle = this.style?.stroke || '#000'
       ctx.lineWidth = this.style?.strokeWidth as number || 1
       ctx.lineCap = this.style?.lineCap || 'butt'
