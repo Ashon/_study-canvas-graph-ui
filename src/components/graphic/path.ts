@@ -1,38 +1,30 @@
 'use client'
 
 import {
-  AnimationProps,
   LineStyleProps,
-  Context2D,
-  EventProps
+  AnimationProps,
+  Context2D
 } from './types'
 import { getPathTotalLength } from './utils'
 import { easingMethods } from './easing'
 
-type LineProps = {
+type PathStyleProps = {
   style?: LineStyleProps
   animation?: AnimationProps
-  events?: EventProps
 }
 
-export const Line = (
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-  { style, animation, events }: LineProps
+export const Path = (
+  pathData: string,
+  { style, animation }: PathStyleProps
 ) => {
 
-  const lineLength = getPathTotalLength(`M${x1},${y1} L${x2},${y2}`)
+  const pathLength = getPathTotalLength(pathData)
 
   return {
-    x1,
-    y1,
-    x2,
-    y2,
+    pathData,
     style,
     animation,
-    length: lineLength,
+    length: pathLength,
     draw: function(this: any, ctx: Context2D, ts: number) {
       ctx.strokeStyle = this.style?.stroke || '#000'
       ctx.lineWidth = this.style?.strokeWidth as number || 1
@@ -46,20 +38,20 @@ export const Line = (
         const progress = (ts % lineAnimationDuration) / lineAnimationDuration
         if (this.animation.lineDashOffset.easing) {
           const easingFunction = easingMethods[this.animation.lineDashOffset.easing]
-          ctx.lineDashOffset = from + lineLength * easingFunction(progress)
+          ctx.lineDashOffset = from + pathLength * easingFunction(progress)
         } else {
-          ctx.lineDashOffset = from + lineLength * progress
+          ctx.lineDashOffset = from + pathLength * progress
         }
 
         ctx.setLineDash(this.style?.lineDash || [])
-        ctx.setLineDash([1, lineLength])
+        ctx.setLineDash([1, pathLength])
       }
 
       ctx.beginPath()
-      ctx.moveTo(this.x1, this.y1)
-      ctx.lineTo(this.x2, this.y2)
-      ctx.stroke()
-
+      if (this.$path === undefined) {
+        this.$path = new Path2D(pathData)
+      }
+      ctx.stroke(this.$path)
       ctx.setLineDash([])
     }
   }

@@ -8,6 +8,7 @@ export const getPathTotalLength = (pathData: string) => {
     'http://www.w3.org/2000/svg',
     'path'
   )
+
   path.setAttribute('d', pathData)
   return path.getTotalLength()
 }

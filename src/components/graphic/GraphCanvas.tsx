@@ -1,32 +1,44 @@
 'use client'
 
-import { forwardRef, useRef, ForwardedRef, useImperativeHandle, useEffect, useCallback } from 'react'
-import { GraphCanvasRef } from './types'
+import {
+  forwardRef,
+  useRef,
+  ForwardedRef,
+  useImperativeHandle,
+  useEffect,
+  useCallback
+} from 'react'
+import { CanvasRef } from './types'
 
-type RepaintSignature = (context: OffscreenCanvasRenderingContext2D, ts: number) => void
+type RepaintSignature = (
+  context: OffscreenCanvasRenderingContext2D,
+  ts: number
+) => void
+
 type Props = {
   className?: string
   style?: React.CSSProperties
   fps?: number
+  resolution?: number
   onRepaint?: RepaintSignature
   autoStart?: boolean
 }
 
-const RESOLUTION = 4
-
-export const GraphCanvas = forwardRef(({
+export const Canvas = forwardRef(({
   className,
   style,
   fps = 60,
+  resolution = 4,
   onRepaint = () => {},
   autoStart = false
-}: Props, ref: ForwardedRef<GraphCanvasRef>) => {
+}: Props, ref: ForwardedRef<CanvasRef>) => {
 
   const rootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const canvasCtxt = useRef<CanvasRenderingContext2D | null | undefined>(undefined)
   const bufferedCanvasRef = useRef<OffscreenCanvas | null>(null)
   const bufferedCtxt = useRef<OffscreenCanvasRenderingContext2D | null>(null)
+
   const lastTimeRef = useRef<number>(0)
   const requestAnimationIdRef = useRef<number | null>(null)
   const repaintRef = useRef<RepaintSignature | null>(null)
@@ -34,18 +46,17 @@ export const GraphCanvas = forwardRef(({
   const interval = 1000 / fps
 
   useEffect(() => {
-    const scaleFactor = devicePixelRatio * RESOLUTION
     if (!rootRef.current) return
-
+    const scaleFactor = devicePixelRatio * resolution
+    const styleScale = 1 / scaleFactor
     const rect = rootRef.current.getBoundingClientRect()
+
     canvasRef.current!.width = rect.width
     canvasRef.current!.height = rect.height
-    const styleScale = 1 / devicePixelRatio
     canvasRef.current!.style.width = rect.width.toString()
     canvasRef.current!.style.height = rect.height.toString()
     canvasRef.current!.style.transformOrigin = 'top left'
-    canvasRef.current!.style.scale = (1 / RESOLUTION).toString()
-
+    canvasRef.current!.style.scale = (1 / resolution).toString()
 
     canvasCtxt.current = canvasRef.current?.getContext('2d')
     if (!canvasCtxt.current) throw new Error('Failed to get canvas context')
@@ -65,10 +76,11 @@ export const GraphCanvas = forwardRef(({
       if (!rootRef.current) return
 
       const rect = rootRef.current.getBoundingClientRect()
+
       canvasRef.current!.style.width = rect.width.toString()
       canvasRef.current!.style.height = rect.height.toString()
       canvasRef.current!.style.transformOrigin = 'top left'
-      canvasRef.current!.style.scale = (1 / RESOLUTION).toString()
+      canvasRef.current!.style.scale = styleScale.toString()
 
       if (!canvasCtxt.current) return
       canvasCtxt.current.canvas.width  = rect.width * scaleFactor
@@ -88,14 +100,15 @@ export const GraphCanvas = forwardRef(({
     repaintRef.current = onRepaint
 
     return () => observer.disconnect()
-  }, [onRepaint])
+  }, [onRepaint, resolution])
 
   const repaint = useCallback((ts: number) => {
     if (bufferedCanvasRef.current && bufferedCtxt.current && canvasCtxt.current && repaintRef.current) {
       const deltaTime = ts - lastTimeRef.current
-      const scaleFactor = devicePixelRatio * RESOLUTION
-
       if (deltaTime > interval) {
+        const scaleFactor = devicePixelRatio * resolution
+        const styleScale = 1 / scaleFactor
+
         lastTimeRef.current = ts - (deltaTime % interval)
 
         // 버퍼 캔버스에 미리 그림
@@ -113,10 +126,11 @@ export const GraphCanvas = forwardRef(({
         // 캔버스에 이미지 페인트
         canvasCtxt.current.clearRect(
           0, 0,
-          canvasCtxt.current.canvas.width,
-          canvasCtxt.current.canvas.height
+          canvasCtxt.current.canvas.width * scaleFactor,
+          canvasCtxt.current.canvas.height * scaleFactor
         )
 
+        canvasCtxt.current.scale(scaleFactor, scaleFactor)
         canvasCtxt.current.drawImage(
           bufferedCanvasRef.current,
           0, 0,
@@ -126,14 +140,11 @@ export const GraphCanvas = forwardRef(({
           canvasCtxt.current.canvas.width,
           canvasCtxt.current.canvas.height
         )
+        canvasCtxt.current.scale(styleScale, styleScale)
       }
     }
     requestAnimationIdRef.current = window.requestAnimationFrame(repaint)
-  }, [interval])
-
-  const node = () => {
-    return canvasRef.current
-  }
+  }, [interval, resolution])
 
   const start = useCallback(() => {
     if (requestAnimationIdRef.current === null) {
@@ -156,17 +167,13 @@ export const GraphCanvas = forwardRef(({
     }
   }, [autoStart, start, stop])
 
-  useImperativeHandle(ref, () => ({ node, start, stop }), [node, start, stop])
+  useImperativeHandle(ref, () => ({ start, stop }), [start, stop])
 
   return (
-    <div
-      className={className}
-      ref={rootRef}
-      style={style}
-    >
+    <div className={className} ref={rootRef} style={style}>
       <canvas ref={canvasRef} />
     </div>
   )
 })
 
-GraphCanvas.displayName = 'GraphCanvas'
+Canvas.displayName = 'Canvas'
