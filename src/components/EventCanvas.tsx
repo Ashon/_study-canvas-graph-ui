@@ -42,7 +42,7 @@ export const EventCanvas = ({
     />
   ), [style, validComponents])
 
-  const [hoverObject, setHoverObject] = useState<View | null>(null)
+  const [hoverSubject, setHoverSubject] = useState<View | null>(null)
 
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!validComponents) return
@@ -54,30 +54,30 @@ export const EventCanvas = ({
     const canvasY = e.clientY - bounds.top
 
     setPoint({x: canvasX, y: canvasY})
-    setHoverObject(null)
+    setHoverSubject(null)
 
     for (const component of validComponents) {
       if (component?.intersects?.(canvasX, canvasY)) {
-        setHoverObject(component)
+        setHoverSubject(component)
         return
       }
     }
   }
 
   const onMouseLeave = () => {
-    setHoverObject(null)
+    setHoverSubject(null)
     setPoint({x: 0, y: 0})
   }
 
   const onClick = () => {
-    if (!hoverObject) return
-    hoverObject.onClick?.()
+    if (!hoverSubject) return
+    hoverSubject.onClick?.()
   }
 
   useEffect(() => {
     if (!containerRef.current) return
-    containerRef.current.style.cursor = hoverObject ? 'pointer' : 'default'
-  }, [hoverObject])
+    containerRef.current.style.cursor = hoverSubject?.onClick ? 'pointer' : 'default'
+  }, [hoverSubject])
 
   return (
     <div style={style}>
@@ -101,13 +101,13 @@ export const EventCanvas = ({
         flexDirection: 'column'
       }}>
         <div>
-          {hoverObject ? 'selected' : 'not selected'}
+          {hoverSubject ? 'selected' : 'not selected'}
         </div>
         <div>
           {point.x} {point.y}
         </div>
         <div>
-          <pre>{JSON.stringify(hoverObject, null, 2)}</pre>
+          <pre>{JSON.stringify(hoverSubject, null, 2)}</pre>
         </div>
       </div>
     </div>
