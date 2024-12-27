@@ -2,15 +2,24 @@
 
 import {
   AnimationProps,
-  LineStyleProps,
+  DrawableStyleProps,
   Context2D,
+  Drawable,
 } from './types'
 import { getPathTotalLength } from './utils'
 import { easingMethods } from './easing'
 
 type LineProps = {
-  style?: LineStyleProps
+  style?: DrawableStyleProps
   animation?: AnimationProps
+}
+
+interface LineType extends Drawable {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  length: number
 }
 
 export const Line = (
@@ -19,7 +28,7 @@ export const Line = (
   x2: number,
   y2: number,
   { style, animation }: LineProps
-) => {
+): LineType | null => {
   if (typeof window === 'undefined') return null
   if (typeof document === 'undefined') return null
 

@@ -26,6 +26,13 @@ export const EventCanvas = ({
     components?.filter(component => component !== null)
   ), [components])
 
+  const componentsCanInteract = useMemo<View[]>(() => (
+    validComponents?.filter((component: View | undefined) => {
+      if (!component) return false
+      return component.onHover || component.onClick
+    }) as View[]
+  ), [validComponents])
+
   const memoizedCanvas = useMemo(() => (
     <BufferedCanvas
       ref={canvasRef}
@@ -45,20 +52,21 @@ export const EventCanvas = ({
   const [hoverSubject, setHoverSubject] = useState<View | null>(null)
 
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!validComponents) return
+    if (!componentsCanInteract) return
 
     const bounds = containerRef.current?.getBoundingClientRect()
     if (!bounds) return
 
     const canvasX = e.clientX - bounds.left
     const canvasY = e.clientY - bounds.top
-
-    setPoint({x: canvasX, y: canvasY})
+    const point = {x: canvasX, y: canvasY}
+    setPoint(point)
     setHoverSubject(null)
 
-    for (const component of validComponents) {
+    for (const component of componentsCanInteract) {
       if (component?.intersects?.(canvasX, canvasY)) {
         setHoverSubject(component)
+        component.onHover?.(point, component)
         return
       }
     }
@@ -71,7 +79,7 @@ export const EventCanvas = ({
 
   const onClick = () => {
     if (!hoverSubject) return
-    hoverSubject.onClick?.()
+    hoverSubject.onClick?.(point, hoverSubject)
   }
 
   useEffect(() => {

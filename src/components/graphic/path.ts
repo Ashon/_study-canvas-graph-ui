@@ -1,22 +1,28 @@
 'use client'
 
 import {
-  LineStyleProps,
+  DrawableStyleProps,
   AnimationProps,
-  Context2D
+  Context2D,
+  Drawable
 } from './types'
 import { getPathTotalLength } from './utils'
 import { easingMethods } from './easing'
 
 type PathStyleProps = {
-  style?: LineStyleProps
+  style?: DrawableStyleProps
   animation?: AnimationProps
+}
+
+interface PathType extends Drawable {
+  pathData: string
+  length: number
 }
 
 export const Path = (
   pathData: string,
   { style, animation }: PathStyleProps
-) => {
+): PathType | null => {
   if (typeof window === 'undefined') return null
   if (typeof document === 'undefined') return null
 

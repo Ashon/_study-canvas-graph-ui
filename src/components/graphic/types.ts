@@ -1,15 +1,23 @@
 export type Context2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 
-export type Drawable = {
+export type Point = {
+  x: number
+  y: number
+}
+
+export interface Drawable {
+  style?: DrawableStyleProps
+  animation?: AnimationProps
   draw: (ctx: Context2D, ts: number) => void
   intersects: (x: number, y: number) => boolean
 }
 
 export interface View extends Drawable {
-  onClick?: () => void
+  onClick?: (point?: Point, view?: View) => void
+  onHover?: (point?: Point, view?: View) => void
 }
 
-export type LineStyleProps = {
+export type DrawableStyleProps = {
   stroke?: string
   strokeWidth?: number
   lineDash?: number[]
