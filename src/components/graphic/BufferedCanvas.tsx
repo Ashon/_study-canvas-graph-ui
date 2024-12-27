@@ -24,7 +24,7 @@ type Props = {
   autoStart?: boolean
 }
 
-export const Canvas = forwardRef(({
+export const BufferedCanvas = forwardRef(({
   className,
   style,
   fps = 60,
@@ -32,7 +32,6 @@ export const Canvas = forwardRef(({
   onRepaint = () => {},
   autoStart = false
 }: Props, ref: ForwardedRef<CanvasRef>) => {
-
   const rootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const canvasCtxt = useRef<CanvasRenderingContext2D | null | undefined>(undefined)
@@ -167,13 +166,22 @@ export const Canvas = forwardRef(({
     }
   }, [autoStart, start, stop])
 
-  useImperativeHandle(ref, () => ({ start, stop }), [start, stop])
+  useImperativeHandle(ref, () => ({
+    start,
+    stop,
+    getBoundingClientRect: () => {
+      return rootRef.current?.getBoundingClientRect() || null
+    }
+  }), [start, stop])
 
   return (
-    <div className={className} ref={rootRef} style={style}>
-      <canvas ref={canvasRef} />
+    <div className={className} ref={rootRef} style={{
+      ...style,
+      overflow: 'hidden'
+    }}>
+      <canvas ref={canvasRef}/>
     </div>
   )
 })
 
-Canvas.displayName = 'Canvas'
+BufferedCanvas.displayName = 'BufferedCanvas'

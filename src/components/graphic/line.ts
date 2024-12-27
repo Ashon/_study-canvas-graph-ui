@@ -20,6 +20,8 @@ export const Line = (
   y2: number,
   { style, animation }: LineProps
 ) => {
+  if (typeof window === 'undefined') return null
+  if (typeof document === 'undefined') return null
 
   const lineLength = getPathTotalLength(`M${x1},${y1} L${x2},${y2}`)
 
@@ -59,6 +61,40 @@ export const Line = (
       ctx.stroke()
 
       ctx.setLineDash([])
+    },
+    intersects: function(this, x: number, y: number, gap: number = 10) {
+      const A = x - this.x1
+      const B = y - this.y1
+      const C = this.x2 - this.x1
+      const D = this.y2 - this.y1
+
+      const dot = A * C + B * D
+      const lenSq = C * C + D * D
+      let param = -1
+
+      if (lenSq !== 0) {
+        param = dot / lenSq
+      }
+
+      let xx, yy
+
+      if (param < 0) {
+        xx = this.x1
+        yy = this.y1
+      } else if (param > 1) {
+        xx = this.x2
+        yy = this.y2
+      } else {
+        xx = this.x1 + param * C
+        yy = this.y1 + param * D
+      }
+
+      const dx = x - xx
+      const dy = y - yy
+      const distance = Math.sqrt(dx * dx + dy * dy)
+
+      // 거리가 선의 두께의 절반보다 작으면 교차로 판단
+      return distance <= ((this.style?.strokeWidth as number + gap || 1) / 2)
     }
   }
 }

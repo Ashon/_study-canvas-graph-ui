@@ -1,5 +1,5 @@
-import { Canvas } from './Canvas'
+import { BufferedCanvas } from './BufferedCanvas'
 import { Line } from './line'
 import { Path } from './path'
 
-export { Canvas, Line, Path }
+export { BufferedCanvas, Line, Path }

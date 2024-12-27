@@ -2,13 +2,19 @@
 
 import { Line, Path } from "@components/graphic"
 import { EventCanvas } from "@components/EventCanvas"
+import { Drawable } from "@components/graphic/types"
 
-const l1 = Line(0, 0, 500, 300, {
-  style: {
-    stroke: 'lime',
-    strokeWidth: 3
+const l1 = {
+  ...Line(0, 0, 500, 300, {
+    style: {
+      stroke: 'lime',
+      strokeWidth: 3
+    }
+  }) as Drawable,
+  onClick: () => {
+    console.log('click')
   }
-})
+}
 
 const l2 = Line(10, 10, 80, 80, {
   style: {
@@ -46,12 +52,17 @@ const l5 = Line(500, 300, 480, 260, {
   },
 })
 
-const p1 = Path('M50,100 C80,50 120,150 150,100', {
-  style: {
-    stroke: '#aaf',
-    strokeWidth: 1,
+const p1 = {
+  ...Path('M50,100 C80,50 120,150 150,100', {
+    style: {
+      stroke: '#aaf',
+      strokeWidth: 1,
+    }
+  }) as Drawable,
+  onClick: () => {
+    console.log('click')
   }
-})
+}
 
 const p2 = Path('M50,100 C80,50 120,150 150,100', {
   style: {

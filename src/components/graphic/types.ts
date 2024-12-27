@@ -1,16 +1,12 @@
 export type Context2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 
-export type EventProps = {
-  onMouseEnter?: () => void
-  onMouseLeave?: () => void
-  onClick?: () => void
-  onMouseMove?: (e: MouseEvent) => void
-  onMouseDown?: (e: MouseEvent) => void
-  onMouseUp?: (e: MouseEvent) => void
-}
-
 export type Drawable = {
   draw: (ctx: Context2D, ts: number) => void
+  intersects: (x: number, y: number) => boolean
+}
+
+export interface View extends Drawable {
+  onClick?: () => void
 }
 
 export type LineStyleProps = {
@@ -32,4 +28,5 @@ export type AnimationProps = {
 export type CanvasRef = {
   start: () => void
   stop: () => void
+  getBoundingClientRect: () => DOMRect | null
 }

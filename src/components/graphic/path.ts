@@ -53,6 +53,26 @@ export const Path = (
       ctx.beginPath()
       ctx.stroke($path)
       ctx.setLineDash([])
+    },
+    intersects: function(this, x: number, y: number, gap: number = 5) {
+      // 임시 캔버스 컨텍스트 생성
+      const tempCanvas = document.createElement('canvas')
+      const tempCtx = tempCanvas.getContext('2d')
+
+      if (!tempCtx) return false
+
+      // gap을 고려한 히트 영역 그리기
+      tempCtx.lineWidth = gap * 2
+      tempCtx.strokeStyle = '#000'
+
+      // 패스 그리기
+      tempCtx.stroke($path)
+
+      // 주어진 좌표에서 픽셀 검사
+      const pixel = tempCtx.getImageData(x, y, 1, 1).data
+
+      // 알파 값이 0보다 크면 충돌로 간주
+      return pixel[3] > 0
     }
   }
 }
