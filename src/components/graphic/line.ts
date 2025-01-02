@@ -1,11 +1,9 @@
-'use client'
-
 import {
   AnimationProps,
   DrawableStyleProps,
   Context2D,
   Drawable,
-} from './types'
+} from '../../types'
 import { getPathTotalLength } from './utils'
 import { easingMethods } from './easing'
 
@@ -61,7 +59,7 @@ export const Line = (
         }
 
         ctx.setLineDash(this.style?.lineDash || [])
-        ctx.setLineDash([1, lineLength])
+        ctx.setLineDash([1, lineLength / (this.animation?.lineDash?.nDots || 1)])
       }
 
       ctx.beginPath()
@@ -72,7 +70,7 @@ export const Line = (
 
       ctx.setLineDash([])
     },
-    intersects: function(this, x: number, y: number, gap: number = 10) {
+    intersects: function(this, x: number, y: number, gap = 10) {
       const A = x - this.x1
       const B = y - this.y1
       const C = this.x2 - this.x1

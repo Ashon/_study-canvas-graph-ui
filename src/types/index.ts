@@ -5,6 +5,13 @@ export type Point = {
   y: number
 }
 
+export type BoundingBox = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 export interface Drawable {
   style?: DrawableStyleProps
   animation?: AnimationProps
@@ -16,6 +23,8 @@ export interface View extends Drawable {
   onClick?: (point?: Point, view?: View) => void
   onMouseEnter?: (point?: Point, view?: View) => void
   onMouseLeave?: (point?: Point, view?: View) => void
+  onDrag?: (point?: Point, view?: View) => void
+  onDragEnd?: (point?: Point, view?: View) => void
 }
 
 export type DrawableStyleProps = {
@@ -33,10 +42,25 @@ export type AnimationProps = {
     to?: number
     easing?: string
   }
+  lineDash?: {
+    nDots?: number
+  }
 }
 
 export type CanvasRef = {
   start: () => void
   stop: () => void
   getBoundingClientRect: () => DOMRect | null
+}
+
+export type Node = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export type Edge = {
+  source: Node
+  target: Node
 }

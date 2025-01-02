@@ -1,11 +1,9 @@
-'use client'
-
 import {
   AnimationProps,
   DrawableStyleProps,
   Context2D,
   Drawable,
-} from './types'
+} from '../../types'
 
 type CircleProps = {
   style?: DrawableStyleProps
@@ -13,14 +11,14 @@ type CircleProps = {
 }
 
 interface CircleType extends Drawable {
-  cx: number
-  cy: number
+  x: number
+  y: number
   r: number
 }
 
 export const Circle = (
-  cx: number,
-  cy: number,
+  x: number,
+  y: number,
   r: number,
   { style, animation }: CircleProps
 ): CircleType | null => {
@@ -28,8 +26,8 @@ export const Circle = (
   if (typeof document === 'undefined') return null
 
   return {
-    cx,
-    cy,
+    x,
+    y,
     r,
     style,
     animation,
@@ -39,12 +37,12 @@ export const Circle = (
       ctx.fillStyle = this.style?.fill || '#000'
 
       ctx.beginPath()
-      ctx.arc(cx, cy, r, 0, 2 * Math.PI)
+      ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI)
       ctx.stroke()
       ctx.fill()
     },
-    intersects: (x: number, y: number, gap: number = 5) => {
-      return Math.sqrt((cx - x) ** 2 + (cy - y) ** 2) <= r + gap
+    intersects: function(this, x: number, y: number, gap = 5) {
+      return Math.sqrt((this.x - x) ** 2 + (this.y - y) ** 2) <= this.r + gap
     }
   }
 }

@@ -1,11 +1,9 @@
-'use client'
-
 import {
   DrawableStyleProps,
   AnimationProps,
   Context2D,
   Drawable
-} from './types'
+} from '../../types'
 import { getPathTotalLength } from './utils'
 import { easingMethods } from './easing'
 
@@ -27,7 +25,6 @@ export const Path = (
   if (typeof document === 'undefined') return null
 
   const pathLength = getPathTotalLength(pathData)
-  const $path = new Path2D(pathData)
 
   return {
     pathData,
@@ -38,7 +35,6 @@ export const Path = (
       ctx.strokeStyle = this.style?.stroke || '#000'
       ctx.lineWidth = this.style?.strokeWidth as number || 1
       ctx.lineCap = this.style?.lineCap || 'butt'
-
 
       if (this.animation?.lineDashOffset) {
         const from = this.animation.lineDashOffset.from || 0
@@ -58,14 +54,14 @@ export const Path = (
       }
 
       ctx.beginPath()
-      ctx.stroke($path)
+      ctx.stroke(new Path2D(this.pathData))
       if (this.style?.fill) {
         ctx.fillStyle = this.style.fill
-        ctx.fill($path)
+        ctx.fill(new Path2D(this.pathData))
       }
       ctx.setLineDash([])
     },
-    intersects: function(this, x: number, y: number, gap: number = 5) {
+    intersects: function(this, x: number, y: number, gap = 5) {
       // 임시 캔버스 컨텍스트 생성
       const tempCanvas = document.createElement('canvas')
       const tempCtx = tempCanvas.getContext('2d')
@@ -77,7 +73,7 @@ export const Path = (
       tempCtx.strokeStyle = '#000'
 
       // 패스 그리기
-      tempCtx.stroke($path)
+      tempCtx.stroke(new Path2D(this.pathData))
 
       // 주어진 좌표에서 픽셀 검사
       const pixel = tempCtx.getImageData(x, y, 1, 1).data

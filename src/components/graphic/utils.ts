@@ -1,5 +1,3 @@
-'use client'
-
 export const getPathTotalLength = (pathData: string) => {
   if (typeof window === 'undefined') return 0
   if (typeof document === 'undefined') return 0

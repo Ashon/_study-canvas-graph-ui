@@ -1,5 +1,3 @@
-'use client'
-
 import {
   forwardRef,
   useRef,
@@ -8,7 +6,7 @@ import {
   useEffect,
   useCallback
 } from 'react'
-import { CanvasRef } from './types'
+import { CanvasRef } from '../../types'
 
 type RepaintSignature = (
   context: OffscreenCanvasRenderingContext2D,
@@ -29,7 +27,7 @@ export const BufferedCanvas = forwardRef(({
   style,
   fps = 60,
   resolution = 2,
-  onRepaint = () => {},
+  onRepaint,
   autoStart = false
 }: Props, ref: ForwardedRef<CanvasRef>) => {
   const rootRef = useRef<HTMLDivElement>(null)
@@ -46,16 +44,18 @@ export const BufferedCanvas = forwardRef(({
 
   useEffect(() => {
     if (!rootRef.current) return
+    if (!canvasRef.current) return
+
     const scaleFactor = devicePixelRatio * resolution
     const styleScale = 1 / scaleFactor
     const rect = rootRef.current.getBoundingClientRect()
 
-    canvasRef.current!.width = rect.width
-    canvasRef.current!.height = rect.height
-    canvasRef.current!.style.width = rect.width.toString()
-    canvasRef.current!.style.height = rect.height.toString()
-    canvasRef.current!.style.transformOrigin = 'top left'
-    canvasRef.current!.style.scale = (1 / resolution).toString()
+    canvasRef.current.width = rect.width
+    canvasRef.current.height = rect.height
+    canvasRef.current.style.width = rect.width.toString()
+    canvasRef.current.style.height = rect.height.toString()
+    canvasRef.current.style.transformOrigin = 'top left'
+    canvasRef.current.style.scale = (1 / resolution).toString()
 
     canvasCtxt.current = canvasRef.current?.getContext('2d')
     if (!canvasCtxt.current) throw new Error('Failed to get canvas context')
@@ -73,13 +73,14 @@ export const BufferedCanvas = forwardRef(({
 
     const observer = new ResizeObserver(() => {
       if (!rootRef.current) return
+      if (!canvasRef.current) return
 
       const rect = rootRef.current.getBoundingClientRect()
 
-      canvasRef.current!.style.width = rect.width.toString()
-      canvasRef.current!.style.height = rect.height.toString()
-      canvasRef.current!.style.transformOrigin = 'top left'
-      canvasRef.current!.style.scale = styleScale.toString()
+      canvasRef.current.style.width = rect.width.toString()
+      canvasRef.current.style.height = rect.height.toString()
+      canvasRef.current.style.transformOrigin = 'top left'
+      canvasRef.current.style.scale = styleScale.toString()
 
       if (!canvasCtxt.current) return
       canvasCtxt.current.canvas.width  = rect.width * scaleFactor
@@ -96,7 +97,7 @@ export const BufferedCanvas = forwardRef(({
       observer.observe(canvasRef.current)
     }
 
-    repaintRef.current = onRepaint
+    repaintRef.current = onRepaint || null
 
     return () => observer.disconnect()
   }, [onRepaint, resolution])
